@@ -19,3 +19,18 @@ A new row is added to the `Jobs` tab in the Google Sheet.
 - Google Sheets OAuth credentials work
 - n8n can transform data using a Code node
 - n8n can save structured job data to the tracker
+
+## 2. Webhook Job Intake
+
+### Purpose
+Receive job information through a POST request and append it to the Google Sheets tracker.
+
+### Nodes
+1. Webhook Trigger
+2. Prepare Job Row
+3. Google Sheets - Append Row
+
+### What this proves
+- n8n can expose an HTTP endpoint
+- External systems can send job data into the workflow
+- The workflow can normalize and save structured job records
