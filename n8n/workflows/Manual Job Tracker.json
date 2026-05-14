@@ -1,0 +1,245 @@
+{
+  "name": "Manual Job Tracker",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -320,
+        -64
+      ],
+      "id": "fcd342a4-0956-416f-8fc6-7508d5d1a971",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ac0cd220-4028-41bc-bc54-562d73d3588e",
+              "name": "job_title",
+              "value": "Python Developer",
+              "type": "string"
+            },
+            {
+              "id": "aeffbe06-0135-4a1c-81d3-635ed19d78f1",
+              "name": "company",
+              "value": "Example Company",
+              "type": "string"
+            },
+            {
+              "id": "f7620ac0-10c5-461a-af92-d3650bb99259",
+              "name": "job_link",
+              "value": "https://example.com/job",
+              "type": "string"
+            },
+            {
+              "id": "f9217890-f317-4b21-9302-a63adc64be79",
+              "name": "source",
+              "value": "Manual",
+              "type": "string"
+            },
+            {
+              "id": "e18e5650-dfe4-417f-94c7-9b7ed8dc6916",
+              "name": "status",
+              "value": "Saved",
+              "type": "string"
+            },
+            {
+              "id": "f6ce9a8b-2925-485e-bb3f-d914f5964ac4",
+              "name": "notes",
+              "value": "First test job",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -48,
+        -48
+      ],
+      "id": "6242136e-0927-446b-86e0-29941f88d5ff",
+      "name": "Set Job Input"
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\n\nreturn [\n  {\n    json: {\n      created_at: new Date().toISOString(),\n      job_title: item.job_title?.trim() || \"\",\n      company: item.company?.trim() || \"\",\n      job_link: item.job_link?.trim() || \"\",\n      source: item.source?.trim() || \"Manual\",\n      status: item.status?.trim() || \"Saved\",\n      notes: item.notes?.trim() || \"\"\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        192,
+        -48
+      ],
+      "id": "555f3d69-1404-4781-98ab-c16afa3322d4",
+      "name": "Prepare Job Row"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1lmU07hto9gdEU7u63e4JWew8ZmUtO4uB-sQ9c3iVokU",
+          "mode": "list",
+          "cachedResultName": "Agentic Job Search Copilot Tracker",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lmU07hto9gdEU7u63e4JWew8ZmUtO4uB-sQ9c3iVokU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Jobs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lmU07hto9gdEU7u63e4JWew8ZmUtO4uB-sQ9c3iVokU/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "created_at": "={{ $json.created_at }}",
+            "job_title": "={{ $json.job_title }}",
+            "company": "={{ $json.company }}",
+            "job_link": "={{ $json.job_link }}",
+            "source": "={{ $json.source }}",
+            "status": "={{ $json.status }}",
+            "notes": "={{ $json.notes }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "job_title",
+              "displayName": "job_title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "company",
+              "displayName": "company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "job_link",
+              "displayName": "job_link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "source",
+              "displayName": "source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "notes",
+              "displayName": "notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        400,
+        -48
+      ],
+      "id": "a4fecd0f-e77f-4440-83ab-94e4b738d4fd",
+      "name": "Append Job to Sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "FtdM6vUxc2fjkS5K",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Set Job Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Job Input": {
+      "main": [
+        [
+          {
+            "node": "Prepare Job Row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Job Row": {
+      "main": [
+        [
+          {
+            "node": "Append Job to Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "8f6674ac-390e-427e-b750-4f3efea21c76",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "69ebca43e451b895139536fc93959f3c6b521c44dcbc7027575c420f2597b58f"
+  },
+  "id": "OZfE5Ymc7epBumSt",
+  "tags": []
+}
