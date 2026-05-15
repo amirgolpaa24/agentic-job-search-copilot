@@ -1,0 +1,208 @@
+{
+  "name": "Webhook Job Intake",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "job-intake",
+        "authentication": "headerAuth",
+        "options": {
+          "responseCode": {
+            "values": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "1a2cafea-f222-49b7-93b2-689e62b5fde5",
+      "name": "Webhook",
+      "webhookId": "5e8633a9-f112-490d-8897-3c5ec409e43f",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "F9TXddFKD5c06Gsb",
+          "name": "Job Intake Webhook Key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first().json;\n\n// Webhook data usually comes inside input.body.\n// But this also supports direct JSON input if we use this workflow later from another node.\nconst body = input.body || input;\n\nreturn [\n  {\n    json: {\n      created_at: new Date().toISOString(),\n      job_title: body.job_title?.trim() || \"\",\n      company: body.company?.trim() || \"\",\n      job_link: body.job_link?.trim() || \"\",\n      source: body.source?.trim() || \"Webhook\",\n      status: body.status?.trim() || \"Saved\",\n      notes: body.notes?.trim() || \"\",\n      job_description: body.job_description?.trim() || \"\"\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        208,
+        0
+      ],
+      "id": "99a116f6-8f92-4570-9f7f-c9671802b3fb",
+      "name": "Prepare Job Row"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1lmU07hto9gdEU7u63e4JWew8ZmUtO4uB-sQ9c3iVokU",
+          "mode": "list",
+          "cachedResultName": "Agentic Job Search Copilot Tracker",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lmU07hto9gdEU7u63e4JWew8ZmUtO4uB-sQ9c3iVokU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Jobs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lmU07hto9gdEU7u63e4JWew8ZmUtO4uB-sQ9c3iVokU/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "created_at": "={{ $json.created_at }}",
+            "job_title": "={{ $json.job_title }}",
+            "company": "={{ $json.company }}",
+            "job_link": "={{ $json.job_link }}",
+            "source": "={{ $json.source }}",
+            "status": "={{ $json.status }}",
+            "notes": "={{ $json.notes }}",
+            "job_description": "={{ $json.job_description }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "job_title",
+              "displayName": "job_title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "company",
+              "displayName": "company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "job_link",
+              "displayName": "job_link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "source",
+              "displayName": "source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "notes",
+              "displayName": "notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "job_description",
+              "displayName": "job_description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        416,
+        0
+      ],
+      "id": "2da13dfe-7036-4fe9-a0d5-d9b1d4f8e7f1",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "FtdM6vUxc2fjkS5K",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Prepare Job Row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Job Row": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "22d3fd52-0621-4a39-bdd4-06c24c6bcd96",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "69ebca43e451b895139536fc93959f3c6b521c44dcbc7027575c420f2597b58f"
+  },
+  "id": "lsibFGdfFQ8cNVTz",
+  "tags": []
+}

@@ -54,3 +54,23 @@ Receive job information through an authenticated webhook, save the raw job to Go
 - n8n can call an LLM API
 - AI output can be parsed into structured fields
 - Raw jobs and analysis results can be saved separately
+
+## 4. Profile-Driven Job Analyzer
+
+### Purpose
+Load the master career profile from Google Drive and use it as the source of truth for job compatibility analysis.
+
+### Nodes Added
+1. Google Drive - Download Profile
+2. Extract From File - Extract Profile Text
+3. Code - Attach Profile to Job
+
+### Updated Flow
+Webhook Trigger → Prepare Job Row → Append Job to Jobs Sheet → Download Profile → Extract Profile Text → Attach Profile to Job → OpenAI Analyze Job → Parse Job Analysis → Append Analysis to Sheet
+
+### What this proves
+- n8n can read external profile/context files from Google Drive
+- The AI analysis is no longer based on a hardcoded summary
+- Job scoring now uses a reusable career profile
+- The workflow is closer to a real profile-driven application assistant
+
