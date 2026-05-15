@@ -1,0 +1,436 @@
+{
+  "name": "Webhook Job Intake",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "job-intake",
+        "authentication": "headerAuth",
+        "options": {
+          "responseCode": {
+            "values": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "1a2cafea-f222-49b7-93b2-689e62b5fde5",
+      "name": "Webhook",
+      "webhookId": "5e8633a9-f112-490d-8897-3c5ec409e43f",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "F9TXddFKD5c06Gsb",
+          "name": "Job Intake Webhook Key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first().json;\n\n// Webhook data usually comes inside input.body.\n// But this also supports direct JSON input if we use this workflow later from another node.\nconst body = input.body || input;\n\nreturn [\n  {\n    json: {\n      created_at: new Date().toISOString(),\n      job_title: body.job_title?.trim() || \"\",\n      company: body.company?.trim() || \"\",\n      job_link: body.job_link?.trim() || \"\",\n      source: body.source?.trim() || \"Webhook\",\n      status: body.status?.trim() || \"Saved\",\n      notes: body.notes?.trim() || \"\",\n      job_description: body.job_description?.trim() || \"\"\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        208,
+        0
+      ],
+      "id": "99a116f6-8f92-4570-9f7f-c9671802b3fb",
+      "name": "Prepare Job Row"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1lmU07hto9gdEU7u63e4JWew8ZmUtO4uB-sQ9c3iVokU",
+          "mode": "list",
+          "cachedResultName": "Agentic Job Search Copilot Tracker",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lmU07hto9gdEU7u63e4JWew8ZmUtO4uB-sQ9c3iVokU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Jobs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lmU07hto9gdEU7u63e4JWew8ZmUtO4uB-sQ9c3iVokU/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "created_at": "={{ $json.created_at }}",
+            "job_title": "={{ $json.job_title }}",
+            "company": "={{ $json.company }}",
+            "job_link": "={{ $json.job_link }}",
+            "source": "={{ $json.source }}",
+            "status": "={{ $json.status }}",
+            "notes": "={{ $json.notes }}",
+            "job_description": "={{ $json.job_description }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "job_title",
+              "displayName": "job_title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "company",
+              "displayName": "company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "job_link",
+              "displayName": "job_link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "source",
+              "displayName": "source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "notes",
+              "displayName": "notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "job_description",
+              "displayName": "job_description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        480,
+        -144
+      ],
+      "id": "2da13dfe-7036-4fe9-a0d5-d9b1d4f8e7f1",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "FtdM6vUxc2fjkS5K",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "responses": {
+          "values": [
+            {
+              "content": "=Analyze this job posting for the candidate.\n\nCandidate background summary:\n- MSc Computer Science, University of Calgary\n- Experience in Python, geospatial data, remote sensing, DGGS, data processing pipelines, computer graphics, research software, and some backend development\n- Interested in AI/ML, backend development, geospatial software, data engineering, and research software roles\n- Skills include Python, C++, JavaScript/Node.js, SQL basics, PyTorch, rasterio, GeoPandas, GDAL, Docker, and technical writing\n- Do not invent experience. Only evaluate based on the provided profile summary.\n\nJob information:\nTitle: {{ $json.job_title }}\nCompany: {{ $json.company }}\nDescription: {{ $json.job_description }}\n\nReturn only valid JSON with this schema:\n\n{\n  \"job_title\": \"{{ $json.job_title }}\",\n  \"company\": \"{{ $json.company }}\",\n  \"job_link\": \"{{ $json.job_link }}\",\n  \"created_at\": \"{{ $json.created_at }}\",\n  \"fit_score\": 0,\n  \"recommended_action\": \"apply | maybe | skip\",\n  \"matched_skills\": [\"string\"],\n  \"missing_skills\": [\"string\"],\n  \"important_keywords\": [\"string\"],\n  \"match_summary\": \"string\",\n  \"risk_flags\": [\"string\"]\n}\n\nScoring guide:\n- 85-100: very strong fit\n- 70-84: good fit\n- 50-69: possible fit\n- below 50: weak fit\n\nBe strict but fair."
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        384,
+        112
+      ],
+      "id": "98b8d922-42c5-47ae-bff5-2ec1251b5521",
+      "name": "Analyze Job with AI",
+      "credentials": {
+        "openAiApi": {
+          "id": "Kwj3DbZbShHNUVCb",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first().json;\n\nlet raw = input.output?.[0]?.content?.[0]?.text || \"\";\n\nraw = raw\n  .replace(/^```json\\s*/i, \"\")\n  .replace(/^```\\s*/i, \"\")\n  .replace(/```$/i, \"\")\n  .trim();\n\nlet analysis;\n\ntry {\n  analysis = JSON.parse(raw);\n} catch (error) {\n  analysis = {\n    job_title: \"\",\n    company: \"\",\n    job_link: \"\",\n    created_at: new Date().toISOString(),\n    fit_score: 0,\n    recommended_action: \"maybe\",\n    matched_skills: [],\n    missing_skills: [],\n    important_keywords: [],\n    match_summary: \"Could not parse AI output.\",\n    risk_flags: [`Parsing failed: ${error.message}`]\n  };\n}\n\nreturn [\n  {\n    json: {\n      created_at: analysis.created_at ?? new Date().toISOString(),\n      job_title: analysis.job_title ?? \"\",\n      company: analysis.company ?? \"\",\n      job_link: analysis.job_link ?? \"\",\n      fit_score: analysis.fit_score ?? 0,\n      recommended_action: analysis.recommended_action ?? \"maybe\",\n      matched_skills: Array.isArray(analysis.matched_skills)\n        ? analysis.matched_skills.join(\", \")\n        : \"\",\n      missing_skills: Array.isArray(analysis.missing_skills)\n        ? analysis.missing_skills.join(\", \")\n        : \"\",\n      important_keywords: Array.isArray(analysis.important_keywords)\n        ? analysis.important_keywords.join(\", \")\n        : \"\",\n      match_summary: analysis.match_summary ?? \"\",\n      risk_flags: Array.isArray(analysis.risk_flags)\n        ? analysis.risk_flags.join(\", \")\n        : \"\"\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        720,
+        112
+      ],
+      "id": "af9e5ab7-c7ea-4c55-9a3e-8822dbd67ce1",
+      "name": "Parse Job Analysis"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1lmU07hto9gdEU7u63e4JWew8ZmUtO4uB-sQ9c3iVokU",
+          "mode": "list",
+          "cachedResultName": "Agentic Job Search Copilot Tracker",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lmU07hto9gdEU7u63e4JWew8ZmUtO4uB-sQ9c3iVokU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 107444907,
+          "mode": "list",
+          "cachedResultName": "Analysis",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lmU07hto9gdEU7u63e4JWew8ZmUtO4uB-sQ9c3iVokU/edit#gid=107444907"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "created_at": "={{ $json.created_at }}",
+            "company": "={{ $json.company }}",
+            "job_title": "={{ $json.job_title }}",
+            "fit_score": "={{ $json.fit_score }}",
+            "recommended_action": "={{ $json.recommended_action }}",
+            "matched_skills": "={{ $json.matched_skills }}",
+            "missing_skills": "={{ $json.missing_skills }}",
+            "important_keywords": "={{ $json.important_keywords }}",
+            "match_summary": "={{ $json.match_summary }}",
+            "risk_flags": "={{ $json.risk_flags }}",
+            "job_link": "={{ $json.job_link }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "job_title",
+              "displayName": "job_title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "company",
+              "displayName": "company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "job_link",
+              "displayName": "job_link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "fit_score",
+              "displayName": "fit_score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "recommended_action",
+              "displayName": "recommended_action",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "matched_skills",
+              "displayName": "matched_skills",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "missing_skills",
+              "displayName": "missing_skills",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "important_keywords",
+              "displayName": "important_keywords",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "match_summary",
+              "displayName": "match_summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "risk_flags",
+              "displayName": "risk_flags",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        944,
+        112
+      ],
+      "id": "ae09ba95-e590-4f11-8895-2d2e6f4232f7",
+      "name": "Append Analysis to Sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "FtdM6vUxc2fjkS5K",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Prepare Job Row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Job Row": {
+      "main": [
+        [
+          {
+            "node": "Analyze Job with AI",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze Job with AI": {
+      "main": [
+        [
+          {
+            "node": "Parse Job Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Job Analysis": {
+      "main": [
+        [
+          {
+            "node": "Append Analysis to Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "2870b9a3-862a-4566-8733-a2b80c647d84",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "69ebca43e451b895139536fc93959f3c6b521c44dcbc7027575c420f2597b58f"
+  },
+  "id": "lsibFGdfFQ8cNVTz",
+  "tags": []
+}
